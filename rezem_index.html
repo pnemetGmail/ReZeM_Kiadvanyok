@@ -61,9 +61,9 @@
         /* Táblázat konténer: Függőlegesen és vízszintesen is görgethető, FIX magassággal a ragadó fejléchez */
         .tabla-kontener {
             width: 100%;
-            max-height: 650px; /* Itt határozzuk meg a magasságot, így a fejléc helyben marad függőleges görgetésnél! */
-            overflow-y: auto;  /* Függőleges görgetősáv a kereten belül */
-            overflow-x: auto;  /* Vízszintes görgetősáv a kereten belül, kéznél van! */
+            max-height: 650px; 
+            overflow-y: auto;  
+            overflow-x: auto;  
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -71,7 +71,7 @@
         }
         table { 
             width: 100%; 
-            min-width: 1100px; /* Biztosítja, hogy vízszintesen is legyen mit görgetni */
+            min-width: 1100px; 
             border-collapse: collapse; 
             text-align: left; 
             white-space: nowrap; 
@@ -81,7 +81,7 @@
             border-bottom: 1px solid #e0e0e0; 
             font-size: 14px; 
         }
-        /* RAGADÓ FEJLÉC: Nem tűnik el lefelé görgetéskor sem! */
+        /* RAGADÓ FEJLÉC */
         th { 
             background-color: #2980b9; 
             color: white; 
@@ -164,7 +164,7 @@
 
     <div class="statisztika" id="talalatStatisztika">Találatok száma: 0</div>
 
-    <!-- Táblázat konténer (Ragadó fejléc + mindkét irányú görgetés) -->
+    <!-- Táblázat konténer -->
     <div class="tabla-kontener">
         <table id="zeneTabla">
             <thead>
@@ -226,7 +226,6 @@
                 let hangAHtml = item.hang_a ? `<a href="${item.hang_a}" target="_blank" class="hang-link">🎵 A oldal</a>` : "-";
                 let hangBHtml = item.hang_b ? `<a href="${item.hang_b}" target="_blank" class="hang-link">🎶 B oldal</a>` : "-";
 
-                // Új oszlop-sorrend: Kiadvány, Év, Szerző, Cím, PDF, Hang A, Hang B, APPARÁTUS (a végén)
                 let sor = `<tr>
                     <td><b>${item.kiadvany}</b></td>
                     <td>${item.ev}</td>
@@ -245,7 +244,7 @@
             let keresettSzo = document.getElementById("foKereso").value.toLowerCase();
             let evFilt = document.getElementById("szEv").value;
             let szerkFilt = document.getElementById("szSzerkeszto").value;
-            let kozrFilt = document.getElementById("szKozreado".trim()).value;
+            let kozrFilt = document.getElementById("szKozreado").value;
             let szerzoFilt = document.getElementById("szSzerzo").value;
             let appFilt = document.getElementById("szApparatus").value;
             let eloaduFilt = document.getElementById("szEloadu").value;
