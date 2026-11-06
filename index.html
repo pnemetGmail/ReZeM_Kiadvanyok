@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>ReZeM Kiadványok Adatbázis</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f6f8; color: #333; }
+        h1 { color: #2c3e50; margin-bottom: 5px; }
+        p.leiras { color: #666; margin-top: 0; margin-bottom: 20px; }
+
+        .vezerlo-panel {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .fo-kereso {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .szeletelok-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .szeletelo-doboz {
+            display: flex;
+            flex-direction: column;
+        }
+        .szeletelo-doboz label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #444;
+        }
+        select {
+            padding: 8px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .statisztika {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .tabla-kontener {
+            width: 100%;
+            max-height: 650px; 
+            overflow-y: auto;  
+            overflow-x: auto;  
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        table { 
+            width: 100%; 
+            min-width: 1100px; 
+            border-collapse: collapse; 
+            text-align: left; 
+            white-space: nowrap; 
+        }
+        th, td { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #e0e0e0; 
+            font-size: 14px; 
+        }
+        th { 
+            background-color: #2980b9; 
+            color: white; 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        tr:hover { background-color: #f1f7fb; }
+
+        .pdf-gomb {
+            background-color: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .pdf-gomb:hover { background-color: #c0392b; }
+
+        .hang-link {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .hang-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>ReZeM Kiadványok</h1>
+    <p class="leiras">Református Zenei Műhely kiadványainak hivatalos, szűrhető adatbázisa</p>
+
+    <div class="vezerlo-panel">
+        <input type="text" id="foKereso" class="fo-kereso" placeholder="🔍 Szabad keresés bármely mezőben (cím, kiadvány, szerző, stb.)..." onkeyup="szuresEsKirajzol()">
+
+        <div class="szeletelok-grid">
+            <div class="szeletelo-doboz">
+                <label for="szEv">Év:</label>
+                <select id="szEv" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes év --</option>
+                </select>
+            </div>
+            <div class="szeletelo-doboz">
+                <label for="szSzerkeszto">Szerkesztő / Összeállító:</label>
+                <select id="szSzerkeszto" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes szerkesztő --</option>
+                </select>
+            </div>
+            <div class="szeletelo-doboz">
+                <label for="szKozreado">Közreadó / Sajtó alá rendező:</label>
+                <select id="szKozreado" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes közreadó --</option>
+                </select>
+            </div>
+            <div class="szeletelo-doboz">
+                <label for="szSzerzo">Szerző:</label>
+                <select id="szSzerzo" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes szerző --</option>
+                </select>
+            </div>
+            <div class="szeletelo-doboz">
+                <label for="szApparatus">Apparátus:</label>
+                <select id="szApparatus" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes apparátus --</option>
+                </select>
+            </div>
+            <div class="szeletelo-doboz">
+                <label for="szEloadu">Előadó:</label>
+                <select id="szEloadu" onchange="szuresEsKirajzol()">
+                    <option value="">-- Összes előadó --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="statisztika" id="talalatStatisztika">Találatok száma: 0</div>
+
+    <div class="tabla-kontener">
+        <table id="zeneTabla">
+            <thead>
+                <tr>
+                    <th>Kiadvány</th>
+                    <th>Év</th>
+                    <th>Szerző</th>
+                    <th>Cím</th>
+                    <th>PDF</th>
+                    <th>Hangzó A</th>
+                    <th>Hangzó B</th>
+                    <th>Apparátus</th>
+                </tr>
+            </thead>
+            <tbody id="tablaTorzs">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Adatok betöltése -->
+    <script src="adat.js"></script>
+
+    <!-- Programlogika -->
+    <script>
+        function feltoltSelect(elementId, elemek) {
+            let select = document.getElementById(elementId);
+            elemek.forEach(elem => {
+                select.innerHTML += `<option value="${elem}">${elem}</option>`;
+            });
+        }
+
+        function szuroketFeltolt() {
+            if (typeof zeneiAdatok === 'undefined') {
+                document.getElementById("talalatStatisztika").innerText = "HIBA: Az adat.js fájl nem töltődött be!";
+                return;
+            }
+            feltoltSelect("szEv", [...new Set(zeneiAdatok.map(i => i.ev))].filter(Boolean).sort());
+            feltoltSelect("szSzerkeszto", [...new Set(zeneiAdatok.map(i => i.szerkeszto))].filter(Boolean).sort());
+            feltoltSelect("szKozreado", [...new Set(zeneiAdatok.map(i => i.kozreado))].filter(Boolean).sort());
+            feltoltSelect("szSzerzo", [...new Set(zeneiAdatok.map(i => i.szerzo))].filter(Boolean).sort());
+            feltoltSelect("szApparatus", [...new Set(zeneiAdatok.map(i => i.apparatus))].filter(Boolean).sort());
+            feltoltSelect("szEloadu", [...new Set(zeneiAdatok.map(i => i.eloadu))].filter(Boolean).sort());
+        }
+
+        function tablaFeltoltes(adatLista) {
+            const tbody = document.getElementById('tablaTorzs');
+            tbody.innerHTML = ""; 
+
+            document.getElementById("talalatStatisztika").innerText = `Találatok száma: ${adatLista.length} db kiadvány`;
+
+            if (adatLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: #888; padding: 30px;">Nincs találat a megadott szűrési feltételeknek megfelelően.</td></tr>`;
+                return;
+            }
+
+            adatLista.forEach(item => {
+                let pdfHtml = item.pdf_link ? `<a href="${item.pdf_link}" target="_blank" class="pdf-gomb">📄 PDF letöltése</a>` : "-";
+                let hangAHtml = item.hang_a ? `<a href="${item.hang_a}" target="_blank" class="hang-link">🎵 A oldal</a>` : "-";
+                let hangBHtml = item.hang_b ? `<a href="${item.hang_b}" target="_blank" class="hang-link">🎶 B oldal</a>` : "-";
+
+                let sor = `<tr>
+                    <td><b>${item.kiadvany}</b></td>
+                    <td>${item.ev}</td>
+                    <td>${item.szerzo || "-"}</td>
+                    <td><b>${item.cim}</b> ${item.alcim ? '<br><small style="color:#666;">' + item.alcim + '</small>' : ''}</td>
+                    <td>${pdfHtml}</td>
+                    <td>${hangAHtml}</td>
+                    <td>${hangBHtml}</td>
+                    <td>${item.apparatus || "-"}</td>
+                </tr>`;
+                tbody.innerHTML += sor;
+            });
+        }
+
+        function szuresEsKirajzol() {
+            let keresettSzo = document.getElementById("foKereso").value.toLowerCase();
+            let evFilt = document.getElementById("szEv").value;
+            let szerkFilt = document.getElementById("szSzerkeszto").value;
+            let kozrFilt = document.getElementById("szKozreado").value;
+            let szerzoFilt = document.getElementById("szSzerzo").value;
+            let appFilt = document.getElementById("szApparatus").value;
+            let eloaduFilt = document.getElementById("szEloadu").value;
+
+            let szurtAdatok = zeneiAdatok.filter(item => {
+                let egyezikKereso = 
+                    item.kiadvany.toLowerCase().includes(keresettSzo) ||
+                    item.cim.toLowerCase().includes(keresettSzo) ||
+                    item.szerzo.toLowerCase().includes(keresettSzo) ||
+                    item.szerkeszto.toLowerCase().includes(keresettSzo) ||
+                    item.kozreado.toLowerCase().includes(keresettSzo) ||
+                    item.apparatus.toLowerCase().includes(keresettSzo) ||
+                    item.eloadu.toLowerCase().includes(keresettSzo);
+
+                let egyezikEv = (evFilt === "") || (item.ev === evFilt);
+                let egyezikSzerk = (szerkFilt === "") || (item.szerkeszto === szerkFilt);
+                let egyezikKozr = (kozrFilt === "") || (item.kozreado === kozrFilt);
+                let egyezikSzerzo = (szerzoFilt === "") || (item.szerzo === szerzoFilt);
+                let egyezikApp = (appFilt === "") || (item.apparatus === appFilt);
+                let egyezikEloadu = (eloaduFilt === "") || (item.eloadu === eloaduFilt);
+
+                return egyezikKereso && egyezikEv && egyezikSzerk && egyezikKozr && egyezikSzerzo && egyezikApp && egyezikEloadu;
+            });
+
+            tablaFeltoltes(szurtAdatok);
+        }
+
+        // Azonnali indítás, amint a HTML szerkezet felépült
+        document.addEventListener("DOMContentLoaded", function() {
+            szuroketFeltolt();
+            if (typeof zeneiAdatok !== 'undefined') {
+                tablaFeltoltes(zeneiAdatok);
+            }
+        });
+    </script>
+
+</body>
+</html>
