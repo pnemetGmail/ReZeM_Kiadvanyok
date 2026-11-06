@@ -2,6 +2,8 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+    <!-- EZ A VARÁZSSOR A MOBILOKHOZ: -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReZeM Kiadványok Adatbázis</title>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f6f8; color: #333; }
@@ -18,7 +20,7 @@
         .fo-kereso {
             width: 100%;
             padding: 12px 15px;
-            font-size: 16px;
+            font-size: 16px; /* 16px alatt iPhone-on ránagyít a böngésző gépeléskor, így pont jó! */
             border: 1px solid #ccc;
             border-radius: 6px;
             margin-bottom: 15px;
@@ -41,8 +43,8 @@
             color: #444;
         }
         select {
-            padding: 8px;
-            font-size: 13px;
+            padding: 10px;
+            font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background: white;
@@ -60,6 +62,7 @@
             max-height: 650px; 
             overflow-y: auto;  
             overflow-x: auto;  
+            -webkit-overflow-scrolling: touch; /* Sima, akadásmentes görgetés iPhone-on és iPaden */
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -67,7 +70,7 @@
         }
         table { 
             width: 100%; 
-            min-width: 1100px; 
+            min-width: 900px; 
             border-collapse: collapse; 
             text-align: left; 
             white-space: nowrap; 
@@ -89,10 +92,10 @@
         .pdf-gomb {
             background-color: #e74c3c;
             color: white;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-radius: 4px;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             display: inline-block;
         }
@@ -102,9 +105,22 @@
             color: #2980b9;
             text-decoration: none;
             font-weight: bold;
-            margin-right: 8px;
+            margin-right: 10px;
+            padding: 4px 0;
+            display: inline-block;
         }
         .hang-link:hover { text-decoration: underline; }
+
+        /* MOBIL ÉS TABLET FINOMHANGOLÁS (768px szélesség alatt) */
+        @media (max-width: 768px) {
+            body { margin: 10px; }
+            h1 { font-size: 22px; }
+            p.leiras { font-size: 13px; margin-bottom: 15px; }
+            .vezerlo-panel { padding: 15px; }
+            .szeletelok-grid { grid-template-columns: 1fr; } /* Mobilon minden szűrő külön sorba kerül, könnyű bökni */
+            .tabla-kontener { max-height: 500px; }
+            th, td { padding: 10px 10px; font-size: 13px; }
+        }
     </style>
 </head>
 <body>
@@ -113,7 +129,7 @@
     <p class="leiras">Református Zenei Műhely kiadványainak hivatalos, szűrhető adatbázisa</p>
 
     <div class="vezerlo-panel">
-        <input type="text" id="foKereso" class="fo-kereso" placeholder="🔍 Szabad keresés bármely mezőben (cím, kiadvány, szerző, stb.)..." onkeyup="szuresEsKirajzol()">
+        <input type="text" id="foKereso" class="fo-kereso" placeholder="🔍 Szabad keresés (cím, kiadvány, szerző)..." onkeyup="szuresEsKirajzol()">
 
         <div class="szeletelok-grid">
             <div class="szeletelo-doboz">
@@ -263,7 +279,6 @@
             tablaFeltoltes(szurtAdatok);
         }
 
-        // Azonnali indítás, amint a HTML szerkezet felépült
         document.addEventListener("DOMContentLoaded", function() {
             szuroketFeltolt();
             if (typeof zeneiAdatok !== 'undefined') {
